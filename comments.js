@@ -19,5 +19,39 @@
  * @returns {object} - The updated comment object.
  */
 function updateComment(postId, commentId, newContent) {
- //
+    // Validate input parameters
+    if (!postId || !commentId || !newContent) {
+        throw new Error('Missing required parameters');
+    }
+
+    // Validate content length
+    if (newContent.trim().length === 0 || newContent.length > 1000) {
+        throw new Error('Comment content must be between 1 and 1000 characters');
+    }
+
+    try {
+        // Find the comment in storage (example using a hypothetical database)
+        const comment = db.comments.findOne({
+            postId: postId,
+            commentId: commentId
+        });
+
+        if (!comment) {
+            throw new Error('Comment not found');
+        }
+
+        // Update the comment
+        const updatedComment = {
+            ...comment,
+            content: newContent,
+            updatedAt: new Date().toISOString()
+        };
+
+        // Save to database
+        db.comments.update(commentId, updatedComment);
+
+        return updatedComment;
+    } catch (error) {
+        throw new Error(`Failed to update comment: ${error.message}`);
+    }
 }
